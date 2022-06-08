@@ -31,51 +31,92 @@
         </style>
     </head>
     <body>
-        <div id="container" style="height: 32rem; overflow: hidden; padding: 0 2rem">
-            <div class="item">1</div>
-            <div class="item">2</div>
-            <div class="item">3</div>
-            <div class="item">4</div>
-            <div class="item">5</div>
-            <div class="item">6</div>
-            <div class="item">7</div>
-            <div class="item">8</div>
-            <div class="item">9</div>
-            <div class="item">10</div>
+        <div id="div1" style="height: 80%; position:relative; margin: 2rem;">
+            <div id="container" style="max-height:100%;overflow:hidden;padding: 0 2rem;">
+                <div class="item">1</div>
+                <div class="item">2</div>
+                <div class="item">3</div>
+                <div class="item">4</div>
+                <div class="item">5</div>
+                <div class="item">6</div>
+                <div class="item">7</div>
+                <div class="item">8</div>
+                <div class="item">9</div>
+                <div class="item">10</div>
+            </div>
         </div>
-
+        
         <div class="ctrl">
             <button id="add">Add</button>
             <button id="remove">Remove</button>
+            <button id="top">BackTop</button>
+            <button id="bottom">DownToBottom</button>
         </div>
 
         <script>
-
-            let bAdd      = document.getElementById('add');
-            let bDel      = document.getElementById('remove');
-            let container = document.getElementById('container');
-            let id        = container.children.length;
+            const MAX_NODES = 22;
+            let bAdd        = document.getElementById('add');
+            let bDel        = document.getElementById('remove');
+            let bTop        = document.getElementById('top');
+            let bBottom     = document.getElementById('bottom');
+            let container   = document.getElementById('container');
+            let id          = container.children.length;
             let firstChild, lastChild;
+
+            const RemoveLastElem = () => {
+                let lastid = container.children.length;
+                if (lastid > 0) {
+                    lastChild = container.children[lastid-1];
+                    container.removeChild(lastChild);
+                }
+            };
+
+            const InsertNewElem = (value) => {
+                let div = document.createElement('div');
+                div.className = "item";
+                if (value) {
+                    div.textContent = value;
+                } else {
+                    div.textContent = id += 1;
+                }
+                let count = container.children.length;
+                firstChild = container.children[0];
+                if (count < MAX_NODES) {
+                    container.insertBefore(div, firstChild);
+                } else {
+                    RemoveLastElem();
+                    InsertNewElem(id += 1);
+                }
+            };
 
             bAdd.addEventListener('mousedown', (ev) => {
                 if (ev.button === 0) {
-                    let div = document.createElement('div');
-                    div.className = "item";
-                    div.textContent = id += 1;
-                    firstChild = container.children[0];
-                    container.insertBefore(div, firstChild);
+                    InsertNewElem(id += 1);
                 }
             });
 
             bDel.addEventListener('mousedown', (ev) => {
                 if (ev.button === 0) {
-                    let lastid = container.children.length;
-                    if (lastid) {
-                        lastChild = container.children[lastid-1];
-                        container.removeChild(lastChild);
-                    }
+                    RemoveLastElem();
                 }
             });
+
+            bTop.addEventListener('mousedown', (ev) => {
+                if (ev.button === 0) {
+                    firstChild = container.children[0];
+                    firstChild.scrollIntoView({behavior: "smooth"});
+                }
+            });
+
+            bBottom.addEventListener('mousedown', (ev) => {
+                if (ev.button === 0) {
+                    let lastid = container.children.length;
+                    if (lastid > 0) {
+                        let lastChild = container.children[lastid-1];
+                        lastChild.scrollIntoView({behavior:"smooth"});
+                    }
+                }
+            })
 
             document.addEventListener('DOMContentLoaded', function () {
                 const ele = document.getElementById('container');
